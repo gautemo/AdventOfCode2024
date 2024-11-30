@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-read --watch",
+    "run": "deno run --allow-read"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.8",
+    "@std/collections": "jsr:@std/collections@^1.0.9"
+  },
+  "fmt": {
+    "lineWidth": 120,
+    "semiColons": false,
+    "singleQuote": true
+  }
+}
