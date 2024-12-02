@@ -1,4 +1,4 @@
-import { sumOf } from "@std/collections";
+import { sumOf } from '@std/collections'
 
 export function part1(input: string) {
   const lists = parseToLists(input)
@@ -9,14 +9,14 @@ export function part1(input: string) {
 
 export function part2(input: string) {
   const lists = parseToLists(input)
-  return sumOf(lists.left, (n) => n * lists.right.filter(it => it === n).length)
+  return sumOf(lists.left, (n) => n * lists.right.filter((it) => it === n).length)
 }
 
 function parseToLists(input: string) {
   const lines = input.split('\n')
   return {
-    left: lines.map(it => parseInt(it.split(' ')[0])).sort(),
-    right: lines.map(it => parseInt(it.split(' ').at(-1)!)).sort()
+    left: lines.map((it) => parseInt(it.split(' ')[0])).sort(),
+    right: lines.map((it) => parseInt(it.split(' ').at(-1)!)).sort(),
   }
 }
 
