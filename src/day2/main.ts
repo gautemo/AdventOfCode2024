@@ -1,5 +1,7 @@
+import { slidingWindows } from '@std/collections'
 import { toListWithNumbers } from '../common/input.ts'
 import { count } from '../common/list.ts'
+import { inRange } from '../common/range.ts'
 
 export function part1(input: string) {
   const levels = toListWithNumbers(input)
@@ -18,12 +20,9 @@ export function part2(input: string) {
 }
 
 function levelIsSafe(level: number[]) {
-  const increases = level[0] < level[1]
-  for (let i = 0; i < level.length - 1; i++) {
-    const diff = increases ? level[i + 1] - level[i] : level[i] - level[i + 1]
-    if (diff > 3 || diff < 1) return false
-  }
-  return true
+  const windows = slidingWindows(level, 2)
+  return windows.every((w) => inRange({ a: 1, b: 3 }, w[1] - w[0])) ||
+    windows.every((w) => inRange({ a: -1, b: -3 }, w[1] - w[0]))
 }
 
 if (import.meta.main) {
