@@ -77,6 +77,6 @@ function isInMap(point: Point, maxX: number, maxY: number) {
 
 if (import.meta.main) {
   const input = await Deno.readTextFile('./inputs/day8.txt')
-  console.log('Answer part 1 =', part1(input)) // ikke 32300
+  console.log('Answer part 1 =', part1(input))
   console.log('Answer part 2 =', part2(input))
 }
