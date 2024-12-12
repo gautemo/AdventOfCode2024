@@ -1,4 +1,5 @@
 import { distinctBy } from '@std/collections'
+import { isNeighbour } from '../common/point.ts'
 
 type Spot = { x: number; y: number; value: number }
 
@@ -13,9 +14,7 @@ export function part2(input: string) {
 }
 
 function stepPossible(from: Spot, to: Spot) {
-  const diffX = Math.abs(from.x - to.x)
-  const diffY = Math.abs(from.y - to.y)
-  return diffX + diffY === 1 && to.value - from.value === 1
+  return isNeighbour(from, to) && to.value - from.value === 1
 }
 
 function getSpots(input: string) {
