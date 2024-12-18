@@ -1,7 +1,5 @@
 import { Point } from '../common/point.ts'
 
-// TODO - refactor for speed? Only do A* if new byte is in last path
-
 if (import.meta.main) {
   const input = await Deno.readTextFile('./inputs/day18.txt')
   console.log('Answer part 1 =', part1(input))
@@ -13,7 +11,25 @@ export function part1(input: string, range = 70, bytes = 1024) {
     const [x, y] = b.split(',').map(Number)
     return { x, y }
   })
-  return aStar({ x: 0, y: 0 }, { x: range, y: range }, range + 1, range + 1, closedPoints)
+  return aStar({ x: 0, y: 0 }, { x: range, y: range }, range + 1, range + 1, closedPoints)?.length
+}
+
+export function part2(input: string, range = 70) {
+  const closedPoints = input.split('\n').map((b) => {
+    const [x, y] = b.split(',').map(Number)
+    return { x, y }
+  })
+  let validPath: string[] | null = null
+  for (let i = 0; i < closedPoints.length; i++) {
+    if (validPath !== null && !validPath.includes(key(closedPoints[i]))) {
+      continue
+    }
+    validPath = aStar({ x: 0, y: 0 }, { x: range, y: range }, range + 1, range + 1, closedPoints.slice(0, i + 1))
+    if (validPath === null) {
+      return key(closedPoints[i])
+    }
+  }
+  throw new Error('should be closed by now')
 }
 
 function heuristic(a: Point, b: Point) {
@@ -21,13 +37,13 @@ function heuristic(a: Point, b: Point) {
 }
 
 function reconstructPath(cameFrom: Map<string, string>, end: string) {
-  let totalPath = 0
+  const path = []
   let current = end
   while (cameFrom.has(current)) {
-    totalPath++
+    path.push(current)
     current = cameFrom.get(current)!
   }
-  return totalPath
+  return path
 }
 
 function aStar(start: Point, goal: Point, width: number, height: number, closed: Point[]) {
@@ -65,20 +81,6 @@ function openNeighbours(on: Point, width: number, height: number, closed: Point[
     .filter((p) => p.x >= 0 && p.x < width)
     .filter((p) => p.y >= 0 && p.y < height)
     .filter((p) => !closed.some((c) => key(p) === key(c)))
-}
-
-export function part2(input: string, range = 70) {
-  const closedPoints = input.split('\n').map((b) => {
-    const [x, y] = b.split(',').map(Number)
-    return { x, y }
-  })
-  for (let i = 0; i < closedPoints.length; i++) {
-    const steps = aStar({ x: 0, y: 0 }, { x: range, y: range }, range + 1, range + 1, closedPoints.slice(0, i + 1))
-    if (steps === null) {
-      return key(closedPoints[i])
-    }
-  }
-  throw new Error('should be closed by now')
 }
 
 function key(point: Point) {
