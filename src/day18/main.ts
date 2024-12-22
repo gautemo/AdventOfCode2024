@@ -52,7 +52,7 @@ function aStar(start: Point, goal: Point, width: number, height: number, closed:
   const gScore = new Map<string, number>()
   gScore.set(key(start), 0)
   const fScore = new Map<string, number>()
-  gScore.set(key(start), heuristic(start, goal))
+  fScore.set(key(start), heuristic(start, goal))
   while (openSet.length > 0) {
     const current = openSet.sort((a, b) => fScore.get(key(b))! - fScore.get(key(a))!).pop()!
     if (key(current) === key(goal)) {
