@@ -14,7 +14,7 @@ const cache = new Map<string, number>()
 
 if (import.meta.main) {
   const input = await Deno.readTextFile('./inputs/day21.txt')
-  console.log('Answer part 1 =', part1(input)) // 217676 too high
+  console.log('Answer part 1 =', part1(input))
   console.log('Answer part 2 =', part2(input))
 }
 
