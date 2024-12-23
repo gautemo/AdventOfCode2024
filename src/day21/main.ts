@@ -10,7 +10,7 @@ const directionalKeyboard = `
 .^A
 <v>`.trim()
 
-const cache = new Map<string, string>()
+const cache = new Map<string, number>()
 
 if (import.meta.main) {
   const input = await Deno.readTextFile('./inputs/day21.txt')
@@ -20,39 +20,39 @@ if (import.meta.main) {
 
 export function part1(input: string) {
   return sumOf(input.split('\n'), (line) => {
-    return complexity(line, 2)
+    return complexity(line, 3)
   })
 }
 
 export function part2(input: string) {
   return sumOf(input.split('\n'), (line) => {
-    console.log('hup')
-    return complexity(line, 25)
+    return complexity(line, 26)
   })
 }
 
 function complexity(type: string, directionalRobots: number) {
-  let result = type
-  for (let i = 0; i <= directionalRobots; i++) {
-    result = typeToMakeRobotType(result)
-  }
-  return result.length * parseInt(type.replace('A', ''))
+  const length = lengthToRobotType(type, directionalRobots)
+  return length * parseInt(type.replace('A', ''))
 }
 
-function typeToMakeRobotType(type: string) {
-  // const splitted = type.split('A')
-  if (cache.get(type)) {
-    console.log('cache hit')
-    return cache.get(type)!
+function lengthToRobotType(type: string, robotDepth: number): number {
+  const cacheKey = `${type}-${robotDepth}`
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)!
   }
-  const map = /\d/.test(type) ? numericKeyboard : directionalKeyboard
-  let on = 'A'
-  let result = ''
-  for (const button of type) {
-    result += buttons(on, button, map) + 'A'
-    on = button
+  let result = 0
+  if (robotDepth === 0) {
+    result = type.length
+  } else {
+    const map = /\d/.test(type) ? numericKeyboard : directionalKeyboard
+    let on = 'A'
+    for (const button of type) {
+      const toTypeButton = buttons(on, button, map) + 'A'
+      result += lengthToRobotType(toTypeButton, robotDepth - 1)
+      on = button
+    }
   }
-  cache.set(type, result)
+  cache.set(cacheKey, result)
   return result
 }
 
