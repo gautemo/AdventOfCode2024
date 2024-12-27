@@ -19,93 +19,41 @@ export function part1(input: string) {
   return getDecimal(wires, 'z')
 }
 
-// Edit comments in function step by step to get swaps needed
 export function part2(input: string) {
   const { wires, gates } = gatesAndWires(input)
 
-  // console.log(`check out ${wrongAtZ(wires, gates)}`) // z10 - then checkout x09, x10, y09, and y10
-  // console.log(
-  //   new Set([
-  //     ...affects('x09', gates, 3),
-  //     ...affects('y09', gates, 3),
-  //     ...affects('x10', gates, 3),
-  //     ...affects('y10', gates, 3),
-  //   ])
-  // ) // "qrc", "bnj", "dkr", "kmb", "z10", "tgq", "psh", "z09", "kks", "vrn", "z11", "ctd", "ptc"
-  // const swaps1 = permute(["qrc", "bnj", "dkr", "kmb", "z10", "tgq", "psh", "z09", "kks", "vrn", "z11", "ctd", "ptc"], 2)
-  // const bestSwap = maxBy(swaps1, ([a,b]) => {
-  //   const copyGates = structuredClone(gates)
-  //   swap(copyGates, a, b)
-  //   return wrongAtZ(wires, copyGates)
-  // })
-  // console.log(bestSwap) // [ "kmb", "z10" ]
-
-  swap(gates, 'kmb', 'z10')
-
-  // console.log(`check out ${wrongAtZ(wires, gates)}`) // z15 - then checkout x14, x15, y14, and y15
-  // console.log(
-  //   new Set([
-  //     ...affects('x14', gates, 3),
-  //     ...affects('y14', gates, 3),
-  //     ...affects('x15', gates, 3),
-  //     ...affects('y15', gates, 3),
-  //   ]),
-  // ) // "dcr", "ttt", "qts", "jkh", "tvp", "z15", "hng", "z16", "sjm", "z14", "kvg", "fsh", "qqc"
-  // const swaps2 = permute(["dcr", "ttt", "qts", "jkh", "tvp", "z15", "hng", "z16", "sjm", "z14", "kvg", "fsh", "qqc"], 2)
-  // const bestSwap = maxBy(swaps2, ([a, b]) => {
-  //   const copyGates = structuredClone(gates)
-  //   swap(copyGates, a, b)
-  //   return wrongAtZ(wires, copyGates)
-  // })
-  // console.log(bestSwap) // [ "tvp", "z15" ]
-
-  swap(gates, 'tvp', 'z15')
-
-  // console.log(`check out ${wrongAtZ(wires, gates)}`) // z25 - then checkout x24, x25, y24, and y25
-  // console.log(
-  //   new Set([
-  //     ...affects('x24', gates, 3),
-  //     ...affects('y24', gates, 3),
-  //     ...affects('x25', gates, 3),
-  //     ...affects('y25', gates, 3),
-  //   ]),
-  // ) //   "mrd", "gbv", "z24", "qnc", "dgv", "gcj", "dpg", "hpr", "z25", "bpw", "mvj", "z26"
-  // const swaps3 = permute(["mrd", "gbv", "z24", "qnc", "dgv", "gcj", "dpg", "hpr", "z25", "bpw", "mvj", "z26"], 2)
-  // const bestSwap = maxBy(swaps3, ([a, b]) => {
-  //   const copyGates = structuredClone(gates)
-  //   swap(copyGates, a, b)
-  //   return wrongAtZ(wires, copyGates)
-  // })
-  // console.log(bestSwap) // [ "dpg", "z25" ]
-
-  swap(gates, 'dpg', 'z25')
-
-  // console.log(`check out ${wrongAtZ(wires, gates)}`) // z35 - then checkout x34, x35, y34, and y35
-  // console.log(
-  //   new Set([
-  //     ...affects('x34', gates, 3),
-  //     ...affects('y34', gates, 3),
-  //     ...affects('x35', gates, 3),
-  //     ...affects('y35', gates, 3),
-  //   ]),
-  // ) // "gbs", "sjd", "tsw", "z35", "qhw", "bsj", "z34", "nvt", "vdk", "mmf", "mtm", "z36", "vgt"
-  // const swaps4 = permute(["gbs", "sjd", "tsw", "z35", "qhw", "bsj", "z34", "nvt", "vdk", "mmf", "mtm", "z36", "vgt"], 2)
-  // const bestSwap = maxBy(swaps4, ([a, b]) => {
-  //   const copyGates = structuredClone(gates)
-  //   swap(copyGates, a, b)
-  //   return wrongAtZ(wires, copyGates)
-  // })
-  // console.log(bestSwap) // [ "vdk", "mmf" ]
-
-  swap(gates, 'vdk', 'mmf')
+  const swap1 = getBestSwap(wires, gates)
+  swap(gates, swap1[0], swap1[1])
+  const swap2 = getBestSwap(wires, gates)
+  swap(gates, swap2[0], swap2[1])
+  const swap3 = getBestSwap(wires, gates)
+  swap(gates, swap3[0], swap3[1])
+  const swap4 = getBestSwap(wires, gates)
+  swap(gates, swap4[0], swap4[1])
 
   solve(wires, gates)
   const shouldBeAnswer = (getDecimal(wires, 'x') + getDecimal(wires, 'y')).toString(2).padStart(45, '0')
   const answer = getDecimal(wires, 'z').toString(2).padStart(45, '0')
   if (shouldBeAnswer === answer) {
-    return ['kmb', 'z10', 'tvp', 'z15', 'dpg', 'z25', 'vdk', 'mmf'].sort().join()
+    return [...swap1, ...swap2, ...swap3, ...swap4].sort().join()
   }
   throw new Error('not solved')
+}
+
+function getBestSwap(wires: Map<string, number | null>, gates: Gate[]) {
+  const zIndex = wrongAtZ(wires, gates)
+  const possibleOutputs = new Set([
+    ...affects(`x${(zIndex - 1).toString().padStart(2, '0')}`, gates, 3),
+    ...affects(`y${(zIndex - 1).toString().padStart(2, '0')}`, gates, 3),
+    ...affects(`x${zIndex.toString().padStart(2, '0')}`, gates, 3),
+    ...affects(`y${zIndex.toString().padStart(2, '0')}`, gates, 3),
+  ])
+  const swaps = permute([...possibleOutputs], 2)
+  return maxBy(swaps, ([a, b]) => {
+    const copyGates = structuredClone(gates)
+    swap(copyGates, a, b)
+    return wrongAtZ(wires, copyGates)
+  })!
 }
 
 function wrongAtZ(wires: Map<string, number | null>, gates: Gate[]) {
