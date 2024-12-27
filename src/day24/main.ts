@@ -1,5 +1,4 @@
-// deno-lint-ignore-file no-unused-vars
-import { maxBy, slidingWindows } from '@std/collections'
+import { maxBy } from '@std/collections'
 import { permute } from '../common/permute.ts'
 
 type Operation = 'AND' | 'OR' | 'XOR'
